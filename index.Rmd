@@ -1,0 +1,880 @@
+---
+title: "Matrizes com apoio do R"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    number_sections: yes
+    theme: readable
+    toc: yes
+  pdf_document:
+    toc: yes
+  word_document:
+    toc: yes
+bibliography: referencias.bib
+---
+
+
+<script>
+   $(document).ready(function() {
+     $head = $('#header');
+     $head.prepend('<img src=\"logoGEAG1menor.png\" style=\"float: right;width: 350px;\"/>')
+   });
+</script>
+
+
+```{r knitr_init, echo=FALSE, cache=FALSE}
+library(knitr)
+library(rmdformats)
+
+## Global options
+options(max.print="75")
+opts_knit$set(width=75)
+```
+
+# Apresentação
+
+As matrizes desempenham um papel de destaque em análises que envolvem diversas variáveis simultaneamente, como as realizadas pelos métodos estatísticos multivariados ou pelos métodos de decisão multi-critérios, de forma que são essenciais para a resolução de problemas nos campos da engenharia,  administração, economia, ciência da computação, entre outros.
+
+# Definição de vetores e matrizes
+**Escalar** é um valor numérico, uma constante. **Vetores** são sequências de números numa única coluna ou linha. Uma **Matriz** pode ser difinida como um conjunto de vetores ou como tabelas retagular de números. Mais formalmente, @chiang2004matematica define uma matriz como um arranjo de números, parâmetros ou variáveis.
+
+A seguir, temos a matriz $\mathbf{A}$ que é formada por elementos que representam números reais. A localização de cada elemento na matriz é indicada por seu subscrito. $a_{ij}$ é o elemento da *i*-ésima linha e *j*-ésima coluna. A matriz, considerando que a matriz possui *m* linhas e *n* colunas que determina a sua ordem que é chamada $m \times n$ (leia "*m* por *n*"). A matriz também pode ser denotada de maneira mais compacta simplesmente por $(a_{ij})$,  $[a_{ij}]$ou $\{a_{ij}\}$.
+
+
+$$\mathbf{A} = \left[\begin{array}
+{cccc}
+a_{11} & a_{12} & \dots & a_{1n}\\
+a_{21} & a_{22} & \dots & a_{2n}\\
+\vdots & \vdots &       & \vdots \\
+ a_{m1}& a_{m2} & \dots & a_{mn}\\
+\end{array}\right]
+$$
+
+Os vetores $\mathbf{u}$ e $\mathbf{v'}$ são respectivamente vetor-coluna com *m* elementos e vetor-linha com *n* elementos. Para uma melhor distinção, @chiang2004matematica explica que o vetor linha vem marcado por uma aspa simples.
+
+$$\mathbf{u} = \left[\begin{array}
+{c}
+u_{1}\\
+u_{2}\\
+\vdots\\
+u_{m}\\
+\end{array}\right]
+$$
+
+$$\mathbf{v'} = \left[\begin{array}
+{cccc}
+v_{1} & v_{2} & \dots & v_{n}\\
+\end{array}\right]
+$$
+
+
+No R, vetores podem ser criados com o comando `c()` e as matrizes pelos comandos `rbind()`, `cbind()` e `matrix()`. No código a seguir, cria-se um vetor `tt` que correponde ao tempo de zero a 3,6 com segundos, com dimensão n=25. A matriz X é criada com o comando `cbind()` que junta dois vetores colunas, atenção que o segundo vetor é cridado dentro do comando. A matriz X ordem $25 \times 2$, como é revelado pelo comando `dim()` que exibe as suas dimensões.
+
+```{r, tidy=F}
+n <- 25
+tt <- seq(from = 0, to = 3.4, length = n) # tempo em segundos
+X <- cbind(X1 = tt, X2 = tt^2) # combina em colunas
+head(X)
+dim(X)    # linhas e colunas
+dim(X)[1] # nº de linhas
+dim(X)[2] # nº de colunas
+```
+
+A função `matrix(elementos, nrow, ncol)` é destinada à criação de matrizes diretamente. Um vetor com os elementos são o primeiro argumento; o `nrow` é o número de linhas e `ncol` é o número de colunas podendo serem informados com o nome do argumento ou somente com o seu valor.
+
+```{r}
+matrix(c(4,2,9,1),nrow=2,ncol=2)
+matrix(data=5,2,2)
+A<- matrix(1:12, nrow=3,ncol=4)
+A
+```
+Os elementos, colunas, e linhas dos vetores e matrizes podem ser acessados, indicando-se a sua posição da seguinte forma: `A[linha, coluna]`.
+
+```{r}
+A[3,2] # elemento da 3ª linha, 2ª coluna
+A[3,]  # 3ª linha
+A[,2]  # 2ª coluna
+```
+
+Observe que a ordem de preenchimento padrão dos elmentos das matrizes, no R é por coluna, mas que isso pode ser alterando, ajustando o argumento `byrow=TRUE`.
+
+```{r}
+A <- matrix(1:12, nrow=3,ncol=4, byrow=TRUE)
+A
+```
+
+
+# Tipos especiais de matrizes
+
+## Matriz diagonal
+É comum se fazer referências aos valores que ficam na diagnonal das matrizes. A diagnonal de matriz pode ser extraída ou sunstituída pelo comando `diag()`
+
+
+```{r}
+S <- matrix(c(4,2,
+              9,1),nrow=2,ncol=2, byrow = TRUE)
+S
+diag(S)
+```
+
+
+
+Uma matriz diagonal é a que possui todos os elementos nulos exceto na diagonal principal. O comando `diag()` cria a uma matriz diagonal, bastando informa os valores da diagonal principal.
+
+```{r}
+diag(c(1, 2, 3))
+```
+
+## Matriz escalar
+A matriz escalar é uma matriz diagonal em que todos os valores da diagonal são iguais, isto é, $d_{ii}=d$, $i=1,\dots, n$.
+
+```{r}
+diag(c(2, 2, 2))
+```
+
+##  Matriz identidade
+A matriz identidade é uma matriz diagnal cujos os valores da diagonal proncipal são todos iguais a um. O comando `diag()` cria a uma matriz identidade, bastando informar a dimensão.
+
+```{r}
+diag(3)
+```
+@chiang2004matematica explica que as matrizes identidades desempenham um papel similar ao número 1 na álgebra de números, já que a multiplcação a multiplicação de uma matriz por uma matriz identidade compátival não altera os valores de seus elementos.
+
+$$
+\mathbf{A} \mathbf{I} = \mathbf{I} \mathbf{A} = \mathbf{A}
+$$
+```{r}
+A <- matrix(c(1,2,3,
+              2,0,3),2,3,byrow = TRUE)
+A
+I <- diag(nrow(A))
+I
+I%*%A
+
+I <- diag(ncol(A))
+I
+A%*%I
+```
+## Matriz nula
+
+```{r}
+matrix(data=0,2,2)
+```
+
+## Matriz e vetores de uns
+Um vetor ($\mathbf{1_n}$) e uma matriz($\mathbf{J_n}$) de uns é aqueles em que todos os elementos são iguais a um. Uma aplicação interessante é na somatória dos elementos das matrizes.
+
+$$\mathbf{1} = \left[\begin{array}
+{c}
+1\\
+1\\
+1\\
+\end{array}\right]
+$$
+
+$$\mathbf{J} = \left[\begin{array}
+{cccc}
+1 & 1 & 1 \\
+1 & 1 & 1 \\
+1 & 1 & 1 \\
+\end{array}\right]
+$$
+
+Interessante notar que
+
+$$\mathbf{J_n}=\mathbf{1_n1_n}^\top$$
+
+```{r}
+uns<- matrix(rep(1, times=3), nrow =3)
+uns
+J<-matrix(data=1,3,3)
+J
+uns%*%t(uns) # =J
+```
+
+# Operações com matrizes
+
+## Multiplicação por um escalar
+
+Quando se multiplica uma matriz por um escalar, todos os seus elementos são multiplicados por esse escalar.
+
+```{r}
+X<-matrix(1:12,4,3) # Cria matriz
+X
+a<-2 # escalar
+a*X
+```
+## Adição e subtração
+
+Para adição ou subtração, as matrizes devem ter as mesmas dimensões e a regra de operação é a seguinte:
+
+$$[a_{ij}] \pm [b_{ij}]=[c_{ij}]$$
+
+
+```{r}
+A <- matrix(c(2,3,-2,1,2,2),3,2)
+B <- matrix(c(1,4,-2,1,2,1),3,2)
+A+B
+A-B
+
+```
+
+## Multiplicação
+
+Segundo @weber1986matematica, duas matrizes **A** e **B** podem ser multiplicadas se, e somente se o número de colunas de uma for igual número de linhas da outra $n=n$, logo precisam ser compatíveis.
+
+$$
+\mathbf{\underset{(m\times n)}A} \mathbf{\underset{(n\times p)}B} = \mathbf{\underset{(m\times p)}C}
+$$
+
+
+
+
+Como se pode observar a sequir, **A** possui duas colunas e **B** possui duas linhas, logo são compatíveis para multiplicação.
+
+
+
+$$
+\mathbf{\underset{(1\times2)}A} =\begin{bmatrix}
+    a_{11}  &  a_{12}           
+\end{bmatrix}
+\quad\quad \mathbf{\underset{(2\times3)}B} 
+\begin{bmatrix}
+    b_{11}  &  b_{12} & b_{13}     \\
+    b_{21}  &  b_{22} & b_{23}     
+\end{bmatrix} 
+$$
+
+O produto de $\mathbf{AB}$, $\mathbf{C}$, tem o mesmo número de linhas de $\mathbf{A}$ e de colunas de 
+$\mathbf{B}$, isto é, $1 \times 3$.
+
+
+
+
+$$
+\mathbf{\underset{(1\times2)}A}\mathbf{\underset{(2\times3)}B}= \mathbf{\underset{(1\times3)}C}= \begin{bmatrix} c_{11} & c_{12} &c_{13} \end{bmatrix}
+$$
+
+Cada elemento do produto de **AB** será o produto de uma linha de **A** por uma coluna de **B**.
+
+$$
+\begin{array} {ll}
+c_{11} & = & a_{11}b_{11}+a_{12}b_{21} \\
+c_{12} & = & a_{11}b_{12}+a_{12}b_{22}\\
+c_{13} & = & a_{11}b_{13}+a_{12}b_{23}
+\end{array}
+$$
+
+<center>
+
+![](figuras\multimatriz.png){ width=30% }
+
+</center>
+
+Cada elemento de **C**, como explica @chiang2004matematica,  é então um escalar que nada mais é do que o *produto interno* da *i*-ésima linha precedente com a *j*-ésima coluna da matriz precedida, ou em outra palavras, cada elmento de **C** será a soma dos produtos das linhas de **A** pelas colunas de **B**.  
+
+$$ \mathbf{AB} = \begin{pmatrix}
+a_{1,1} & a_{1,2} & \dots & a_{1,n}\\
+a_{2,1} & a_{2,2} & \dots & a_{2,n}\\
+& & \vdots & \\
+a_{m,1} & a_{m,2} & \dots & a_{m,n}
+\end{pmatrix}
+\begin{pmatrix} b_{1,1}&\dots & b_{1,p} \\
+b_{2,1}&\dots & b_{2,p} \\
+& \vdots & \\
+b_{n,1}&\dots & b_{n,p}
+\end{pmatrix} $$
+
+
+$$ = \begin{pmatrix} \sum_{i=1}^n a_{1,i} b_{i,1} & \dots & \sum_{i=1}^n a_{1,i} b_{i,p}\\
+& \vdots & \\
+\sum_{i=1}^n a_{m,i} b_{i,1} & \dots & \sum_{i=1}^n a_{m,i} b_{i,p}
+\end{pmatrix} $$
+
+No R, use `%*%` para multiplicar matrizes.
+
+```{r}
+m7 <- matrix(c(3,4,5,6),2)
+m8 <- matrix(c(-1,4,0,7),2)
+m7;m8 #veja que as matrizes possuem dimensoes compatáveis: m7(2x2) e m8(2x2).
+m7%*%m8
+
+m9 <- matrix(c(1,2,4,3,8,0),3,2) #3 linhas e 2 colunas
+m10 <- matrix(c(5,9),2,1)
+m9%*%m10 # compatibilidade: m9(3x2) e m8(2x1). Produto=(3x1)
+
+m11 <- matrix(c(3,1,4,-1,0,0,2,3,2),3)
+m12 <- matrix(c(0,-1,0,-1/5,1/5,2/5,3/10,7/10,-1/10),3)
+```
+A multiplicação de vetores encontra diversas aplicações, da estatísticas. As mais comuns são os cálculos da média aritmética, da veriância e da soma dos quadrados dos desvios, como serão exemplificados adiante.
+
+A seguir, são demonstrados os produtos de vetores com os elementos 1,2 e 3. O vetor $\mathbf{u}$, criado pelo comando `c()`, é um vetor coluna. Os vetores criados com esse comando são sempre vetores colunas. Já o vetor $\mathbf{v'}$ é um vetor linha criado com a função `matrix()`, observe que o argumento `ncol=3` força a criação de um vetor linha com 3 colunas.
+
+Nos dois casos a multiplicação vetor por próprio só é possível pela transposição que o torna compatível para a operação. Observe que quando um vetor linha precede um vetor coluna, o produto é um escalar, mas quando ocorre o contrário, o resultado é uma matriz quadrada. 
+
+```{r}
+u <- c(1,2,3) # vetor coluna (3x1)
+u
+t(u)%*%u     # (1x3)x(3x1)=(1x1)
+u%*%t(u)     # (3x1)x(1x3)=(3x3)
+
+v <- matrix(c(1,2,3),ncol=3) # Vetor linha (1x3)
+v
+v %*% t(v)   # (1x3)x(3x1)=(1x1)
+
+sum(v*v)     # Soma do produto: produto interno
+
+t(v) %*% v   # (3x1)x(1x3)=(3x3)
+```
+A seguir um exemplos simples de somatória dos elementos de um vetor coluna, $\mathbf{u}$, bastando pré-multiplicá-lo por um vetor linha de uns com dimensão compatível.
+
+$$\mathbf{1}^\top \mathbf{u} = 
+\begin{pmatrix}
+1&1&\dots&1
+\end{pmatrix}
+\begin{pmatrix} u_1\\ u_2\\ \vdots\\ u_n
+\end{pmatrix}
+= \sum_{i=1}^n u_i$$
+
+
+$$\mathbf{1}^\top \mathbf{u} = 
+\begin{pmatrix}
+1&1&1
+\end{pmatrix}
+\begin{pmatrix} 1\\ 2\\ 3
+\end{pmatrix}
+= 6$$
+
+Pode-se ainda se gerar um vetor com a mesma dimensão do vetor original, preenchido com os valores da somatória dos seus elementos. Nesse caso, pré-multiplica-se o vetor $\mathbf{u}$ $\mathbf{1}\mathbf{1}^\top$, gerando-se uma matriz de uns com dimensões compatíveis.
+
+$$\mathbf{1}\mathbf{1}^\top \mathbf{u} = 
+\begin{pmatrix} 1\\ 1\\ 1
+\end{pmatrix}
+\begin{pmatrix}
+1&1&1
+\end{pmatrix}
+\begin{pmatrix} 1\\ 2\\ 3
+\end{pmatrix}
+= 
+\begin{pmatrix} 1&1&1\\
+                1&1&1\\
+                1&1&1\\
+\end{pmatrix}
+\begin{pmatrix} 1\\ 2\\ 3
+\end{pmatrix}
+=
+\begin{pmatrix} 6\\ 6\\ 6
+\end{pmatrix}
+$$
+
+```{r}
+length(u) # length e não dim porque u foi criado por c()
+um <- matrix(1, nrow = length(u), ncol = 1) # Vetor coluna (3X1)
+um
+
+t(um)%*%u  # (1x3)(3x1)=(1x1)
+sum(u) # equivalente a somar seus elementos
+
+um%*%t(um)
+um%*%t(um)%*%u
+```
+O mesmo raciocínio é válido para dados em matrizes, tendo cuidado com a compatibilidade. A seguir a matriz $\mathbf{A}$ com dimensão ($2 \times 2$) é pré-multiplicado por um vetor de $\mathbf{1}$ com $n=2$,gerando um vetor cujos elementos são as somas das colunas de $\mathbf{A}$
+
+```{r}
+A <- matrix(c(4,2,
+              9,1),nrow=2,ncol=2, byrow = TRUE)
+A
+dim(A)
+dim(A)[1]
+uns <- matrix(data=1,nrow=dim(A)[1])
+uns
+t(uns)
+t(uns)%*%A
+uns%*%t(uns)
+uns%*%t(uns)%*%A
+```
+
+## Determinante
+
+@weber1986matematica, explica que o determinante é um escalar característico obtido dos elementos de uma matriz quadrada mediante operações específicas. Somente mantrizes quadradas possuem determinantes.O autor explica que o determinante de uma matriz $2 \times 2$
+
+$$ \mathbf{A} = \begin{bmatrix}
+a_{1,1} & a_{1,2}\\
+a_{2,1} & a_{2,2}\\
+\end{bmatrix}
+$$
+
+é calculada da como a diferença dos produtos de suas diagonais.
+
+$$det(\mathbf{A})=|\mathbf{A}|=a_{1,1}a_{2,2}-a_{1,2}a_{2,1}$$
+
+```{r}
+A <- matrix(c(4,2,
+            9,1),nrow=2,ncol=2, byrow = TRUE)
+A
+det(A)
+```
+
+O determinante da matriz de covariâncias (S) é a variância generalizada. A variância generalizada é utilizada como um índice de dispersão global para dados multivariados, caracterizando em um único valor quanta variabilidade existe em um conjunto de variáveis. Resume a informação contida em S.
+
+## Traço de uma matriz quadrada
+O traço de uma matriz é a somatória dos elementos de sua diagonal principal.
+
+$$
+tr(\mathbf{A})=a_{11}+a_{22}+\dots+a_{nn}
+$$
+
+```{r}
+A <- matrix( seq( 1, 9, 1 ), nrow=3, byrow=TRUE )
+A
+sum(diag(A))
+
+library(matrixcalc)
+matrix.trace(A)
+```
+Como veremos adiante, a variância total é o traço da matriz de correlação, que é igual ao número de variáveis.
+
+
+## Transposição de matrizes
+
+Na trasposição, as colunas trocam de posicação com as linhas da matriz. a transposta de uma matriz $\mathbf{A}, m \times n$ é uma matriz $\mathbf{A}^\top$ com dimensão $n \times m$.
+
+```{r}
+t(X)
+```
+
+
+
+## Inversão de matrizes
+
+Como esclarece @weber1986matematica, a inversa de uma matriz é utilizada principalmente para resolver problemas que envolvem sistemas de equações lineares.
+
+ - Somente as matrizes quadradas podem ser invertidas;
+ - Nem todas as matrizes possuem inversas, mesmo sendo quandrada;
+ - Uma matriz A é invertível se  $det(A)\ne0$;
+ - A inversa de uma matriz $\mathbf{X}$ é donotada $\mathbf{X}^{-1}$  
+ - $\mathbf{X}^{-1}\mathbf{X}= \mathbf{I}$
+
+ 
+```{r}
+X <- matrix(c(1,1,1,
+              3,-2,1,
+              2,1,-1),3,3, byrow = T)
+X
+det(X) # determinante !=zero?
+solve(X)     # transposta
+round(solve(X)%*%X,1) # verificação: =I? 
+```
+
+## Interpretação geométrica de vetores
+
+Conforme explica @chiang2004matematica, um vetor pode ser visto como um conjunto ordenado de *n* elementos, logo como um ponto no espaço de dimensão *n*. As retas que partem da origem $(0,0)$ em direção das coordenadas definidas pelos pontos fornecidos pelo vetor são denominadas *raio vetor*. Geometricamente, não importa se o vetor é coluna ou linha, pois ambos são interpretados como um par ordenado, como o vetor $\mathbf{u}$.
+
+
+$$
+\mathbf{u}=
+\begin{bmatrix}
+3\\2 
+\end{bmatrix}
+\quad \text{ou} \quad
+\mathbf{u'}=
+\begin{bmatrix}
+3&2 
+\end{bmatrix}
+$$
+
+Com apoio do pacote **matlib**, os significados geométricos do vetor $\mathbf{u}$ seram gerados no R.
+
+O primeiro exemplo é a multiplcação de um vetor por um escalar, $2\mathbf{u}$. A seta resultante se sobrepõe a anterior ($\mathbf{u}$), mas com o dobro do comprimento.
+
+```{r, warning=F, message=F}
+library(matlib)
+u <- c(3,2)
+u;2*u
+plot(c(0, 5), c(0, 6), type="n",
+       xlab="X", ylab="Y", asp=1)
+abline(v=0, h=0, col="darkgray")
+vectors(rbind(u),
+          col=c("blue"),
+          cex.lab=2)
+vectors(2*u, origin=u,labels="2u",
+          col="blue", lty=2)
+title(main = "(a) Multiplicação escalar de um vetor, k>1")
+```
+
+```{r}
+-u # -1*u
+plot(c(-4, 4), c(-3, 3), type="n",
+       xlab="X", ylab="Y", asp=1)
+abline(v=0, h=0, col="darkgray")
+vectors(rbind(u),
+          col=c("blue"),
+          cex.lab=2)
+vectors(-u, origin=u,labels=" -u",
+          col="blue", lty=2)
+title(main = "(b) Multiplicação escalar de um vetor, k<0")
+```
+
+
+
+```{r}
+v <- c(1,4)
+u+v # soma de vetores
+plot(c(0, 6), c(0, 6), type="n",
+       xlab="X", ylab="Y", asp=1)
+abline(v=0, h=0, col="darkgray")
+vectors(rbind(u, v, "u+v"=u + v),
+          col=c("red", "blue", "purple"),
+          cex.lab=c(2, 2, 2.2))
+vectors(u + v, origin=u,
+          col="red", lty=2)
+vectors(u + v, origin=v,
+          col="blue", lty=2)
+title(main = "(c) Adição de vetores")
+```
+```{r}
+plot(c(-4, 6), c(-4, 6), type="n",
+       xlab="X", ylab="Y", asp=1)
+abline(v=0, h=0, col="darkgray")
+vectors(rbind("-u"=-u, v, " v-u"=v - u),
+          col=c("red", "blue", "purple"),
+          cex.lab=c(2, 2, 2))
+vectors(v-u, origin=-u,
+          col="red", lty=2)
+vectors(v-u, origin=v,
+          col="blue", lty=2)
+title(main = "(d) Subtração de vetores")
+```
+
+
+## Dependência linear
+Segundo @chiang2004matematica, um conjunto de vetores é linearmente dependente se (e somente se) um deles pode ser expresso como uma combinação linear dos demais.
+
+A seguir, os vetores $v1$, $v2$ e $v3$ são linearmente dependentes porque $v3$ é uma combinação linear de $V1$ e $v3$:
+
+$$
+3v1-2v2=v3
+$$
+
+```{r}
+v1<-c(2,7)
+v2<-c(1,8)
+v3<-3*v1-2*v2
+v1;v2;v3
+```
+A relação entre os vetores pode também ser expressa por
+
+$$
+3v1-2v2-v3=0
+$$
+
+```{r}
+3*v1-2*v2-v3
+```
+
+Na seção \@ref(geom), os gráficos **a** e **b** são exemplos de dependência linear, todavia, os gráficos **c** e **d** são linearmente independentes, pois os vetores não podem ser expressos como combinação linear um do outro.
+
+
+```{r}
+library(matlib)
+xlim <- c(0,10)
+ylim <- c(0,10)
+plot( xlim, ylim, type="n", xlab="X", ylab="Y", asp=1)
+abline(v=0, h=0, col="gray")
+vectors(v1)
+vectors(v2, col="red")
+vectors(v3, col="blue")
+```
+
+
+## Operações com linhas e colunas com o R
+
+O número de linhas e colunas, alám do comando `dim()` pode ser acessado de maneira mais intuitiva por `nrow()` e `ncol()`.
+
+```{r}
+X <- matrix(c(3,2,4,3,2,-2,6,1),4,2)
+X
+dim(X)
+
+nrow(X) # mesmo que dim(X)[1]
+ncol(X) # mesmo que dim(X)[2]
+```
+
+Soma e médias de linhas e colunas de matrizes podem ser calculadas pelos comandos a seguir:
+
+
+```{r}
+A <- matrix(c(2,3,-2,1,2,2),3,2)
+A
+
+colSums(A)
+rowSums(A)
+sum(A)
+
+colMeans(A)
+rowMeans(A)
+mean(A)
+```
+
+## Autovalores e autovetores
+
+
+A decomposição própria (decomposição espectral) consiste em escrever uma matriz A diagonalizável qualquer em termos de seus auto-vetores (v) e auto-valores (λ). Como veremos adiante, na técnica de **componentes principais**, os autovetores representam as direções de maior variabilidade, denominadas componentes principais. Já os autovalores medem a variabioidade explicada dos dadosoriginais fornecidas por cada uma das componentes prinicapis
+
+Desta forma, chega-se a seguinte expressão:
+
+$$
+A=\nu^{-1}\lambda\nu
+$$
+
+# Aplicações de matrizes
+
+## Estatísticas descritivas de dados multivariados
+ A álgebra matricial permite a fácil manipulação de dados multivariados. Tomemsos como exemplo as notas de uma amostra de 5 estudantes em Matemática, Português e Arte, organizados numa matrix X com n=5 linhas, cada uma representado um estudante, e k=3 colunas, cada uma com as notas dos alunos na respectiva disciplina.
+ 
+ Para o cálculo das médias, variância e desvio padrão de cada estudante, deve-se realizar os seguintes cálculos:
+
+ - Calcule as médias;
+ - Gere uma matriz de desvios;
+ - Calcule a soma dos quadrados dos desvios;
+ - Divida por pelo número de linhas ou número de observações, caara encontrar a matriz de variância-covariância.
+
+A médias de cada coluna pode ser obtidas pela seguinte fórmula:
+$$
+\mathbf{\bar{x}}=\mathbf{1'X} \frac{1}{n}
+$$
+
+Uma matriz com vetores de médias para uma subtração postarior pode ser gerada pela seguinte equação:
+$$
+\mathbf{\bar{X}}=\mathbf{11'X} \frac{1}{n}
+$$
+Os desvios são calculados como a seguir
+
+$$
+\mathbf{D} = \mathbf{X} - \mathbf{11'X}\frac{1}{n}
+$$
+ ou
+$$
+\mathbf{D} = \mathbf{X} - \mathbf{\bar{X}}
+$$
+ Matriz de variância-covariância:
+ 
+$$
+\mathbf{S} = \mathbf{D'D}\frac{1}{n-1}
+$$
+
+```{r}
+X<-matrix(c(90,	60,	90,
+            90,	90,	30,
+            60,	60,	60,
+            60,	60,	90,
+            30,	30,	30),byrow=T,nrow = 5,ncol = 3)
+n<-nrow(X)
+uns<-matrix(rep(1,n), ncol = 1)
+t(uns)%*%X*(1/n)# médias
+uns%*%t(uns)%*%X*(1/n) # matriz com colunas de médias
+D <- X-uns%*%t(uns)%*%X*(1/n) # desvios
+D
+DD<-t(D)%*%D # desvios ao quadrado
+DD
+S <- DD*(1/(n-1)) # Var-Cov
+S
+```
+
+Claro que o entendimmento do processo é importante para desenvolvimentos futuros, todavia, o R é capaz executar os mesmos cálculos com funções simples:
+
+```{r}
+colMeans(X)
+var(X)
+```
+
+No R matriz de variância-covariância pode ser tranformada em matriz de correlações com a função `cov2cor()`
+
+```{r}
+R<-cov2cor(S)
+R
+```
+
+```{r}
+sum(diag(S)) # Variância total (também = sum(out$values))
+det(S)
+eigen(S)
+out<-eigen(S)
+V<- out$vectors
+sum(out$values) # Variância total (também =sum(diag(S)))
+```
+
+## Resolução de sistemas de equações lineares
+Como esclarece @weber1986matematica, a inversa de uma matriz é utilizada principalmente para resolver problemas que envolvem sistemas de equações lineares, como o sistema a seguir que possui três equações:
+
+$$ \begin{align*}
+b_1 + b_2 + b_3 &=6\\
+3b_1 - 2b_2 + b_3 &= 2\\
+2b_1 + b_2 - b_3 &= 1 
+\end{align*} $$
+ 
+ que pode ser escrito
+ 
+ $$\begin{bmatrix}
+1&1&1\\ 3&-2&1\\ 2&1&-1
+\end{bmatrix}
+\begin{bmatrix}
+b_1\\ b_2\\ b_3 
+\end{bmatrix}
+=
+\begin{bmatrix}
+b_1 + b_2 + b3 \\ 3b_1 - 2b_2 + b_3 \\ 2b_1 + b_2 - b_3 
+\end{bmatrix} $$ 
+
+ou
+
+$$\mathbf{X}_{m\times n}\mathbf{b}_{n\times 1}=\mathbf{y}_{m\times 1}$$
+
+Se $X$ for quadrada, $m=n$ e não singular, ou seja possui uma inversa, o sistema de equações lineares simultâneas pode ser resolvido da seguinte forma: 
+ 
+$$
+\mathbf{b}_{n\times 1}=\mathbf{X}_{n\times n}^{-1}\mathbf{y}_{n\times 1}
+$$
+
+No R, a inversão de matrizes pode ser realizada pelo comando `solve()` sobre a matriz $\mathbf{X}$. A solução do sistema pode ser encontrada, multiplicando o valor retornado pelo `solve(X)` por $\mathbf{y}$ ou, diretamente, dentro do comando. Os valores no vetor resultante são os valores de $\mathbf{b}_{n\times 1}$, ou seja, $b_1=1$, $b_2=2$ e $b_3=3$.
+
+```{r}
+X <- matrix(c(1,1,1,
+              3,-2,1,
+              2,1,-1),3,3, byrow = T)
+
+y <- matrix(c(6,2,1),3,1)
+solve(X)     # transposta
+solve(X)%*%y # Equivalente a solve(X,y)
+solve(X, y)  # Equivalente a solve(X)%*%y
+```
+
+```{r}
+A<-matrix(c(6,1,4,3,4,-1,1,-2,5),3)
+d<-matrix(c(22,12,10),3,1)
+solve(A,d) #melhor opção
+solve(A)%*%d
+```
+
+
+
+
+## Média
+
+$\bar{Y}=\frac{1}{N} Y_i$ e $\mbox{var}(Y)=\frac{1}{N} \sum_{i=1}^N (Y_i - \bar{Y})^2$
+
+
+$$ A=
+\begin{pmatrix}
+1\\ 1\\ \vdots\\ 1
+\end{pmatrix} $$
+
+$$ \frac{1}{N} \mathbf{A}^\top Y = \frac{1}{N}
+\begin{pmatrix}
+1&1&\dots&1
+\end{pmatrix}
+\begin{pmatrix} Y_1\\ Y_2\\ \vdots\\ Y_N
+\end{pmatrix}
+= \frac{1}{N} \sum_{i=1}^N Y_i = \bar{Y} $$
+
+Tomemos o exemplo de @neto2010fazer, em que o rendimento percentual numa reação química é registrado para diversas temperaturas (x).
+
+
+| x| y|
+|:--:|:--:|
+|40|60|
+|45|70|
+|50|77|
+|55|86|
+|60|91|
+
+
+$$ \mathbf{Y} =
+\begin{pmatrix}
+60\\ 70\\ 77\\ 86\\ 91 \\
+\end{pmatrix}
+$$
+
+ $$\bar{Y}=
+ \frac{1}{N} \mathbf{1}^\top \mathbf{Y} = \frac{1}{5}
+ \begin{pmatrix}
+1&1&1&1&1
+\end{pmatrix}
+\begin{pmatrix}
+60\\ 70\\ 77\\ 86\\ 91 \\
+\end{pmatrix}=76,8 $$
+
+
+```{r}
+#library(UsingR)
+data(father.son,package="UsingR")
+y <- father.son$sheight
+print(mean(y))
+
+N <- length(y)
+Y<- matrix(y,N,1)
+A <- matrix(1,N,1)
+barY=t(A)%*%Y / N
+
+print(barY)
+```
+
+
+## Variância
+
+$$ \mathbf{r}\equiv
+\begin{pmatrix} Y_1 - \bar{Y}\\
+\vdots\\ Y_N - \bar{Y}
+\end{pmatrix}, \frac{1}{N} \mathbf{r}^\top\mathbf{r} = \frac{1}{N}\sum_{i=1}^N (Y_i - \bar{Y})^2 $$
+
+
+$r^\top r$
+
+```{r}
+r <- y - barY
+crossprod(r)/N
+(t(r)%*%r)/N
+```
+## Variância
+O determinante de uma matriz representa a variância generalizada das várias variáveis. Isto é, ele caracteriza em um único valor quanta variabilidade existe em um conjunto de variáveis.
+
+
+
+
+## Soma dos quadrados
+
+## Modelos lineares
+$$ \mathbf{Y} = 
+\begin{pmatrix}
+Y_1\\ Y_2\\ \vdots\\ Y_N
+\end{pmatrix} , 
+\mathbf{X} = 
+\begin{pmatrix} 1&x_1\\ 1&x_2\\ \vdots\\ 1&x_N 
+\end{pmatrix} , 
+\mathbf{\beta} = 
+\begin{pmatrix} 
+\beta_0\\ \beta_1
+\end{pmatrix} 
+\mbox{ and } \mathbf{\varepsilon} = 
+\begin{pmatrix}
+\varepsilon_1\\ \varepsilon_2\\ \vdots\\ \varepsilon_N
+\end{pmatrix} $$
+
+
+$$ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, i=1,\dots,N $$
+
+$$ , \begin{pmatrix}
+Y_1\\ Y_2\\ \vdots\\ Y_N 
+\end{pmatrix} = 
+\begin{pmatrix} 1&x_1\\ 1&x_2\\ \vdots\\ 1&x_N 
+\end{pmatrix} 
+\begin{pmatrix}
+\beta_0\\ \beta_1 
+\end{pmatrix} + 
+\begin{pmatrix}
+\varepsilon_1\\ \varepsilon_2\\ \vdots\\ \varepsilon_N
+\end{pmatrix} $$
+
+$$ \mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon} $$
+
+# Referências
